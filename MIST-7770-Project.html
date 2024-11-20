@@ -1,0 +1,271 @@
+﻿<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd"><html><head></head><body>
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+<div class="container-fluid main-container">
+
+
+
+
+<div>
+
+
+
+<h1 class="title toc-ignore">MIST 7770 Final Project ‘Spambase’</h1>
+<h4 class="author">Group 3: Ryan Cullen, Judd Douglas, Matthew Karnatz,
+Collin Ladina, Shaan Patel</h4>
+<h4 class="date">2024-11-18</h4>
+
+</div>
+
+
+<div class="section level1">
+<h1>Read data as tibble (tidyverse data structure that is similar to
+dataframes)</h1>
+<pre class="r"><code>data &lt;- read_excel(&quot;data/SpamBase data.xlsx&quot;) %&gt;% as_tibble()</code></pre>
+</div>
+<div class="section level1">
+<h1>Descriptive statistics for X’s (independent features) with describe
+method from psych package</h1>
+<p>These descriptive statistics are before handling any outliers and/or
+missing valeus in the data</p>
+<pre class="r"><code>descriptive_statistics &lt;- describe(data,fast = T)
+descriptive_statistics %&gt;%
+  select(-c(vars,n,skew,kurtosis,se)) %&gt;% 
+  slice(1:nrow(descriptive_statistics)-1) # does not include is_spam (binary values 0 or 1)</code></pre>
+<pre><code>##                              mean     sd median min      max    range
+## word_freq_make               0.10   0.31   0.00   0     4.54     4.54
+## word_freq_address            0.21   1.29   0.00   0    14.28    14.28
+## word_freq_all                0.28   0.50   0.00   0     5.10     5.10
+## word_freq_3d                 0.06   1.39   0.00   0    43.00    43.00
+## word_freq_our                0.31   0.67   0.00   0    10.00    10.00
+## word_freq_over               0.10   0.27   0.00   0     5.88     5.88
+## word_freq_remove             0.11   0.39   0.00   0     7.27     7.27
+## word_freq_internet           0.11   0.40   0.00   0    11.11    11.11
+## word_freq_order              0.09   0.28   0.00   0     5.26     5.26
+## word_freq_mail               0.24   0.64   0.00   0    18.18    18.18
+## word_freq_receive            0.06   0.20   0.00   0     2.61     2.61
+## word_freq_will               0.54   0.86   0.10   0     9.67     9.67
+## word_freq_people             0.09   0.30   0.00   0     5.55     5.55
+## word_freq_report             0.06   0.34   0.00   0    10.00    10.00
+## word_freq_addresses          0.05   0.26   0.00   0     4.41     4.41
+## word_freq_free               0.25   0.83   0.00   0    20.00    20.00
+## word_freq_business           0.14   0.44   0.00   0     7.14     7.14
+## word_freq_email              0.18   0.53   0.00   0     9.09     9.09
+## word_freq_you                1.66   1.78   1.31   0    18.75    18.75
+## word_freq_credit             0.09   0.51   0.00   0    18.18    18.18
+## word_freq_your               0.81   1.20   0.22   0    11.11    11.11
+## word_freq_font               0.12   1.03   0.00   0    17.10    17.10
+## word_freq_000                0.10   0.35   0.00   0     5.45     5.45
+## word_freq_money              0.09   0.44   0.00   0    12.50    12.50
+## word_freq_hp                 0.55   1.67   0.00   0    20.83    20.83
+## word_freq_hpl                0.27   0.89   0.00   0    16.66    16.66
+## word_freq_george             0.77   3.37   0.00   0    33.00    33.00
+## word_freq_650                0.12   0.54   0.00   0     9.09     9.09
+## word_freq_lab                0.10   0.59   0.00   0    14.28    14.28
+## word_freq_labs               0.10   0.47   0.00   0     6.00     6.00
+## word_freq_telnet             0.06   0.40   0.00   0    12.50    12.50
+## word_freq_857                0.05   0.34   0.00   0     5.00     5.00
+## word_freq_data               0.10   0.56   0.00   0    18.18    18.18
+## word_freq_415                0.05   0.33   0.00   0     4.76     4.76
+## word_freq_85                 0.11   0.53   0.00   0    20.00    20.00
+## word_freq_technology         0.10   0.40   0.00   0     7.69     7.69
+## word_freq_1999               0.14   0.42   0.00   0     6.89     6.89
+## word_freq_parts              0.01   0.22   0.00   0     8.33     8.33
+## word_freq_pm                 0.08   0.43   0.00   0    11.11    11.11
+## word_freq_direct             0.06   0.35   0.00   0     4.76     4.76
+## word_freq_cs                 0.04   0.36   0.00   0     7.00     7.00
+## word_freq_meeting            0.13   0.77   0.00   0    14.28    14.28
+## word_freq_original           0.05   0.22   0.00   0     3.57     3.57
+## word_freq_project            0.08   0.62   0.00   0    20.00    20.00
+## word_freq_re                 0.30   1.01   0.00   0    21.42    21.42
+## word_freq_edu                0.18   0.91   0.00   0    22.05    22.05
+## word_freq_table              0.00   0.08   0.00   0     2.00     2.00
+## word_freq_conference         0.03   0.29   0.00   0    10.00    10.00
+## char_freq_;                  0.04   0.24   0.00   0     4.38     4.38
+## char_freq_(                  0.14   0.27   0.06   0     9.75     9.75
+## char_freq_[                  0.02   0.11   0.00   0     4.08     4.08
+## char_freq_!                  0.27   0.82   0.00   0    32.48    32.48
+## char_freq_$                  0.08   0.25   0.00   0     6.00     6.00
+## char_freq_#                  0.04   0.43   0.00   0    19.83    19.83
+## capital_run_length_average   5.19  31.73   2.28   1  1102.50  1101.50
+## capital_run_length_longest  52.17 194.89  15.00   1  9989.00  9988.00
+## capital_run_length_total   283.29 606.35  95.00   1 15841.00 15840.00</code></pre>
+</div>
+<div class="section level1">
+<h1>Descriptive Statistics for Most Important Inputs</h1>
+<p>A feature being considered the most important in this context means
+the feature was included in the final/best Big ML model.</p>
+<pre class="r"><code>most_important &lt;- data %&gt;%
+  select(c(&#39;word_freq_all&#39;, &#39;word_freq_our&#39;, &#39;word_freq_will&#39;, &#39;word_freq_free&#39;, &#39;word_freq_you&#39;, &#39;word_freq_your&#39;, &#39;word_freq_re&#39;, &#39;char_freq_(&#39;, &#39;char_freq_!&#39;, &#39;char_freq_$&#39;, &#39;capital_run_length_average&#39;, &#39;capital_run_length_longest&#39;, &#39;capital_run_length_total&#39;))
+
+describe(most_important,fast = T) %&gt;%
+  select(-c(vars,n,skew,kurtosis,se)) %&gt;% 
+  slice(1:nrow(descriptive_statistics)-1) # does not include is_spam (binary values 0 or 1)</code></pre>
+<pre><code>##                              mean     sd median min      max    range
+## word_freq_all                0.28   0.50   0.00   0     5.10     5.10
+## word_freq_our                0.31   0.67   0.00   0    10.00    10.00
+## word_freq_will               0.54   0.86   0.10   0     9.67     9.67
+## word_freq_free               0.25   0.83   0.00   0    20.00    20.00
+## word_freq_you                1.66   1.78   1.31   0    18.75    18.75
+## word_freq_your               0.81   1.20   0.22   0    11.11    11.11
+## word_freq_re                 0.30   1.01   0.00   0    21.42    21.42
+## char_freq_(                  0.14   0.27   0.06   0     9.75     9.75
+## char_freq_!                  0.27   0.82   0.00   0    32.48    32.48
+## char_freq_$                  0.08   0.25   0.00   0     6.00     6.00
+## capital_run_length_average   5.19  31.73   2.28   1  1102.50  1101.50
+## capital_run_length_longest  52.17 194.89  15.00   1  9989.00  9988.00
+## capital_run_length_total   283.29 606.35  95.00   1 15841.00 15840.00</code></pre>
+<p>Descriptive statistics from describe method in psych package will not
+be helpful for the is_spam because is_spam is binary. Therefore, we
+created a relative frequency table below to serve as the descriptive
+statistic for is_spam.</p>
+</div>
+<div class="section level1">
+<h1>Relative Frequency Table of Spam</h1>
+<pre class="r"><code>table(data$is_spam)/length(data$is_spam)</code></pre>
+<pre><code>## 
+##         0         1 
+## 0.6059552 0.3940448</code></pre>
+</div>
+<div class="section level1">
+<h1>Missing Values</h1>
+<pre class="r"><code>missing_values &lt;- is.na(data) %&gt;% sum()</code></pre>
+<p>There are 0 missing values. We will now check for outliers below.</p>
+</div>
+<div class="section level1">
+<h1>Handling Outliers (any outliers for a feature become the median of
+said feature)</h1>
+<pre class="r"><code>columns_with_outliers &lt;- c()
+clean_data &lt;- data[,1:ncol(data)-1] # we are just checking X&#39;s for outliers, not checking y plus our y (is_spam) is categorical and binary (0 or 1), so no need to check for outliers in y
+
+for (col_name in colnames(clean_data)) {
+  column &lt;- clean_data[[col_name]]
+  
+  if (is.numeric(column)) { # they should all be numeric, but safe to check
+    q1 &lt;- quantile(column,0.25) # could use na.rm = T, but there are no missing values
+    column_median &lt;- median(column) # could use na.rm = T, but there are no missing values
+    q3 &lt;- quantile(column,0.75) # could use na.rm = T, but there are no missing values
+    iqr &lt;- q3 - q1
+    lower_bound &lt;- q1 - (1.5 * iqr)
+    upper_bound &lt;- q3 + (1.5 * iqr)
+    
+    clean_data[[col_name]] &lt;- ifelse( (column &lt; lower_bound | column &gt; upper_bound), column_median, column) # this will replace any outlier in column with the median of said column
+    
+    outlier_indices &lt;- which(column &lt; lower_bound | column &gt; upper_bound)
+    if (length(outlier_indices) &gt; 0) {
+      columns_with_outliers &lt;- c(columns_with_outliers, col_name)
+    }
+    
+  }
+  paste(col_name,&quot;is not numeric, so function was not applied to said column&quot;) %&gt;% return()
+}</code></pre>
+<p>There are 57 X’s that are numeric columns needing to be checked for
+outliers, and 57 columns had outliers.</p>
+</div>
+<div class="section level1">
+<h1>Writing new Excel file with cleaned data (input to BigML
+models)</h1>
+<pre class="r"><code>clean_data &lt;- clean_data %&gt;%
+  mutate(is_spam = data$is_spam)
+# dim(clean_data) # it has 4601 (rows), 58 (columns) just like the original data
+write_xlsx(clean_data, &quot;data/Cleaned SpamBase Data.xlsx&quot;)</code></pre>
+<p>The dimensions for the clean data (now in a new Excel file) and the
+original data are the same. The original data has 4601 rows and 58
+columns; similarly, the clean data has 4601 rows and 58 columns.</p>
+</div>
+
+
+
+
+</div>
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+<script type="module" src="https://s.brightspace.com/lib/bsi/2024.10.209/unbundled/mathjax.js"></script><script type="text/javascript">document.addEventListener('DOMContentLoaded', function() {
+						if (document.querySelector('math') || /\$\$|\\\(|\\\[|\\begin{|\\ref{|\\eqref{/.test(document.body.innerHTML)) {
+							document.querySelectorAll('mspace[linebreak="newline"]').forEach(elm => {
+								elm.setAttribute('style', 'display: block; height: 0.5rem;');
+							});
+
+							window.D2L.MathJax.loadMathJax({
+								outputScale: 1,
+								renderLatex: true,
+								enableMML3Support: false
+							});
+						}
+					});</script><script type="module" src="https://s.brightspace.com/lib/bsi/2024.10.209/unbundled/prism.js"></script><script type="text/javascript">document.addEventListener('DOMContentLoaded', function() {
+					document.querySelectorAll('.d2l-code').forEach(code => {
+						window.D2L.Prism.formatCodeElement(code);
+					});
+				});</script><script type="module" src="https://s.brightspace.com/lib/bsi/2024.10.209/unbundled/embeds.js"></script><script type="text/javascript">document.addEventListener('DOMContentLoaded', function() {
+					window.D2L.EmbedRenderer.renderEmbeds(document.body);
+				});</script></body></html>
