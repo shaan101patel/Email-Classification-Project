@@ -1,4 +1,4 @@
-# Spam Email Classification
+# Email Classification
 
 ## Contributers:
 - Collin Ladina
